@@ -34,6 +34,7 @@ pub enum PaddingScheme {
         digest: Box<dyn DynDigest>,
         salt_len: Option<usize>,
     },
+    None
 }
 
 impl fmt::Debug for PaddingScheme {
@@ -51,6 +52,7 @@ impl fmt::Debug for PaddingScheme {
                 // TODO: How to print the digest name?
                 write!(f, "PaddingScheme::PSS(salt_len: {:?})", salt_len)
             }
+            PaddingScheme::None => {write!(f, "No Padding")},
         }
     }
 }
@@ -157,5 +159,9 @@ impl PaddingScheme {
             digest: Box::new(T::new()),
             salt_len: Some(len),
         }
+    }
+
+    pub fn new_no_padding() -> Self {
+        PaddingScheme::None
     }
 }

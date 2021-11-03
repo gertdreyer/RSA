@@ -15,7 +15,7 @@ use crate::errors::{Error, Result};
 
 use crate::padding::PaddingScheme;
 use crate::raw::{DecryptionPrimitive, EncryptionPrimitive};
-use crate::{oaep, pkcs1v15, pss};
+use crate::{oaep, pkcs1v15, pss, nopadding};
 
 lazy_static! {
     static ref MIN_PUB_EXPONENT: BigUint = BigUint::from_u64(2).unwrap();
@@ -197,6 +197,7 @@ impl PublicKey for RsaPublicKey {
                 mut mgf_digest,
                 label,
             } => oaep::encrypt(rng, self, msg, &mut *digest, &mut *mgf_digest, label),
+            PaddingScheme::None => nopadding::encrypt(self,msg),
             _ => Err(Error::InvalidPaddingScheme),
         }
     }
@@ -516,9 +517,9 @@ pub fn check_public(public_key: &impl PublicKeyParts) -> Result<()> {
         return Err(Error::PublicExponentTooSmall);
     }
 
-    if public_key.e() > &*MAX_PUB_EXPONENT {
-        return Err(Error::PublicExponentTooLarge);
-    }
+    // if public_key.e() > &*MAX_PUB_EXPONENT {
+    //     return Err(Error::PublicExponentTooLarge);
+    // }
 
     Ok(())
 }
